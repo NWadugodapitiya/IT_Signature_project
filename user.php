@@ -132,7 +132,9 @@ $user = $stmt->fetch();
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
-                            <button type="button" class="btn btn-primary checkout-btn">Proceed to Checkout</button>
+                            <a href="checkout.php" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag me-2"></i>Proceed to Checkout
+                            </a>
                         </div>
                     </div>
                 </div>
