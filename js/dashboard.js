@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-secondary quantity-btn minus">-</button>
-                            <span class="btn btn-outline-secondary disabled">${item.quantity}</span>
+                            <span class="btn btn-outline-secondary quantity-btn disabled">${item.quantity}</span>
                             <button class="btn btn-outline-secondary quantity-btn plus">+</button>
                         </div>
                     </td>
