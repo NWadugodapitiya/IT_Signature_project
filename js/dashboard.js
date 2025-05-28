@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
     // Sidebar Toggle
     const sidebarToggle = document.querySelector('.sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
@@ -211,140 +211,129 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartTotalElements = document.querySelectorAll('.cart-total');
     const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
 
-    // Add to Cart functionality
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function() {
-            const productCard = this.closest('.product-card');
-            const product = {
-                id: productCard.dataset.productId,
-                name: productCard.querySelector('.card-title').textContent,
-                price: parseFloat(productCard.querySelector('.card-text.text-primary').textContent.replace('Rs. ', '')),
-                quantity: 1
-            };
-
-            addToCart(product);
-            updateCartUI();
-            showNotification('Product added to cart!');
-        });
-    });
-
-    // Update quantity in cart
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('quantity-btn')) {
-            const row = e.target.closest('tr');
-            const productId = row.dataset.productId;
-            const change = e.target.classList.contains('plus') ? 1 : -1;
-            updateQuantity(productId, change);
-        }
-    });
-
-    // Remove from cart
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-from-cart')) {
-            const row = e.target.closest('tr');
-            const productId = row.dataset.productId;
-            removeFromCart(productId);
-        }
-    });
-
-    // Cart Functions
-    function addToCart(product) {
-        const existingItem = cart.find(item => item.id === product.id);
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            cart.push(product);
-        }
-        saveCart();
-    }
-
-    function updateQuantity(productId, change) {
-        const item = cart.find(item => item.id === productId);
-        if (item) {
-            item.quantity = Math.max(1, item.quantity + change);
-            saveCart();
-            updateCartUI();
-        }
-    }
-
-    function removeFromCart(productId) {
-        cart = cart.filter(item => item.id !== productId);
-        saveCart();
-        updateCartUI();
-        showNotification('Product removed from cart!');
-    }
-
-    function updateCartUI() {
-        // Update cart count
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCountElements.forEach(element => {
-            element.textContent = totalItems;
-        });
-
-        // Update cart modal table
-        if (cartItemsTable) {
-            cartItemsTable.innerHTML = cart.map(item => `
-                <tr data-product-id="${item.id}">
-                    <td>${item.name}</td>
-                    <td>Rs. ${item.price.toFixed(2)}</td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-secondary quantity-btn minus">-</button>
-                            <span class="btn btn-outline-secondary quantity-btn disabled">${item.quantity}</span>
-                            <button class="btn btn-outline-secondary quantity-btn plus">+</button>
-                        </div>
-                    </td>
-                    <td>Rs. ${(item.price * item.quantity).toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-sm btn-danger remove-from-cart">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Update total
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        cartTotalElements.forEach(element => {
-            element.textContent = `Rs. ${total.toFixed(2)}`;
-        });
-    }
-
-    function saveCart() {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }
-
-    function loadCart() {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            cart = JSON.parse(savedCart);
-            updateCartUI();
-        }
-    }
-
-    function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.className = 'alert alert-success position-fixed top-0 end-0 m-3';
-        notification.style.zIndex = '1050';
-        notification.innerHTML = message;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.remove();
-        }, 2000);
-    }
-
     // Load cart on page load
     loadCart();
-
-    // Cart Modal Functionality
-    const cartTriggers = document.querySelectorAll('.cart-trigger');
     
-    cartTriggers.forEach(trigger => {
-        trigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            cartModal.show();
+    // Add to cart (simplified to always add 1)
+    $('.add-to-cart').click(function() {
+        const productId = $(this).data('product-id');
+        const button = $(this);
+        
+        // Disable button while processing
+        button.prop('disabled', true);
+        
+        $.post('php/cart_actions.php', {
+            action: 'add',
+            product_id: productId,
+            qty: 1  // Always add 1 item
+        }, function(response) {
+            if (response.success) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Product added to cart',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    // Reload the page after the alert
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+                // Re-enable button on error
+                button.prop('disabled', false);
+            }
+        }, 'json');
+    });
+    
+    // Update cart quantity
+    $(document).on('change', '.cart-qty', function() {
+        const cartId = $(this).data('cart-id');
+        const qty = $(this).val();
+        
+        $.post('php/cart_actions.php', {
+            action: 'update',
+            cart_id: cartId,
+            qty: qty
+        }, function(response) {
+            if (response.success) {
+                loadCart();
+            } else {
+                Swal.fire('Error', response.message, 'error');
+                loadCart(); // Reload cart to reset quantities
+            }
+        }, 'json');
+    });
+    
+    // Remove from cart
+    $(document).on('click', '.remove-from-cart', function() {
+        const cartId = $(this).data('cart-id');
+        
+        Swal.fire({
+            title: 'Remove Item',
+            text: 'Are you sure you want to remove this item from cart?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, remove it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('php/cart_actions.php', {
+                    action: 'remove',
+                    cart_id: cartId
+                }, function(response) {
+                    if (response.success) {
+                        loadCart();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                }, 'json');
+            }
         });
     });
-}); 
+    
+    // Show cart modal
+    $('.cart-trigger').click(function() {
+        $('#cartModal').modal('show');
+    });
+});
+
+// Load cart contents
+function loadCart() {
+    $.post('php/cart_actions.php', {
+        action: 'get_cart'
+    }, function(response) {
+        if (response.success) {
+            let html = '';
+            let totalAmount = 0;
+            
+            response.items.forEach(item => {
+                const itemTotal = parseFloat(item.price) * parseInt(item.qty);
+                totalAmount += itemTotal;
+                
+                html += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>Rs. ${parseFloat(item.price).toFixed(2)}</td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm cart-qty" 
+                                value="${item.qty}" min="1" max="${item.stock}" 
+                                style="width: 80px" data-cart-id="${item.cart_id}">
+                        </td>
+                        <td>Rs. ${itemTotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger remove-from-cart" data-cart-id="${item.cart_id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            $('.cart-items').html(html || '<tr><td colspan="5" class="text-center">Your cart is empty</td></tr>');
+            $('.cart-total').text('Rs. ' + totalAmount.toFixed(2));
+            $('.cart-count').text(response.items.length);
+        }
+    }, 'json');
+} 
