@@ -2,7 +2,7 @@
 
 A full-featured e-commerce system with real-time inventory management, secure user authentication, and shopping cart functionality.
 
-🌐 **Live Demo**: [https://testproject.infy.uk](https://testproject.infy.uk)
+🌐 **Live Demo**: [https://itsignature.infy.uk](https://itsignature.infy.uk)
 
 ## Features
 
