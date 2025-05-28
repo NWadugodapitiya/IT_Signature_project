@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
 
-// Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Admin') {
     die(json_encode(['success' => false, 'message' => 'Unauthorized access']));
 }

@@ -219,13 +219,12 @@ $(document).ready(function() {
         const productId = $(this).data('product-id');
         const button = $(this);
         
-        // Disable button while processing
         button.prop('disabled', true);
         
         $.post('php/cart_actions.php', {
             action: 'add',
             product_id: productId,
-            qty: 1  // Always add 1 item
+            qty: 1  
         }, function(response) {
             if (response.success) {
                 Swal.fire({
@@ -235,12 +234,10 @@ $(document).ready(function() {
                     showConfirmButton: false,
                     timer: 1000
                 }).then(() => {
-                    // Reload the page after the alert
                     window.location.reload();
                 });
             } else {
                 Swal.fire('Error', response.message, 'error');
-                // Re-enable button on error
                 button.prop('disabled', false);
             }
         }, 'json');
@@ -260,7 +257,7 @@ $(document).ready(function() {
                 loadCart();
             } else {
                 Swal.fire('Error', response.message, 'error');
-                loadCart(); // Reload cart to reset quantities
+                loadCart(); 
             }
         }, 'json');
     });
@@ -293,7 +290,6 @@ $(document).ready(function() {
         });
     });
     
-    // Show cart modal
     $('.cart-trigger').click(function() {
         $('#cartModal').modal('show');
     });

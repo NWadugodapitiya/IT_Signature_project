@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $product_id = intval($_POST['product_id']);
             $qty = intval($_POST['qty']);
             
-            // Check if product exists and has enough stock
+    // Check if product exists and has enough stock
             $stmt = $conn->prepare("SELECT quantity, price FROM products WHERE id = ?");
             $stmt->execute([$product_id]);
             $product = $stmt->fetch();
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             
-            // Check if product already in user's cart
+         // Check if product already in user's cart
             $stmt = $conn->prepare("SELECT id, qty FROM card WHERE user_id = ? AND product_id = ?");
             $stmt->execute([$user_id, $product_id]);
             $cart_item = $stmt->fetch();
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conn->beginTransaction();
                 
                 if ($cart_item) {
-                    // Update quantity if already in cart
+                // Update quantity if already in cart
                     $new_qty = $cart_item['qty'] + $qty;
                     if ($new_qty > $product['quantity']) {
                         $conn->rollBack();

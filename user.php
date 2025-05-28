@@ -2,13 +2,11 @@
 session_start();
 require_once 'config.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
 }
 
-// Get user info
 $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch();
@@ -50,7 +48,6 @@ $user = $stmt->fetch();
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -69,7 +66,6 @@ $user = $stmt->fetch();
             </div>
         </nav>
 
-        <!-- Dashboard Content -->
         <div class="container-fluid py-4">
             <!-- Products Section -->
             <div class="row mb-4">
@@ -126,7 +122,7 @@ $user = $stmt->fetch();
                                         </tr>
                                     </thead>
                                     <tbody class="cart-items">
-                                        <!-- Cart items will be loaded here -->
+                                        <!-- card data  -->
                                     </tbody>
                                 </table>
                             </div>
@@ -150,6 +146,7 @@ $user = $stmt->fetch();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom JS -->
     <script src="js/dashboard.js"></script>
 </body>
 </html> 

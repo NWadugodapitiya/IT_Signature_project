@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Helper functions
     function showError(input, message) {
         const formFloating = input.closest('.form-floating');
         const errorDiv = document.createElement('div');
@@ -133,10 +132,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // register.php out
 
-// index.html in
-
-
-
-
-
-// index.html out

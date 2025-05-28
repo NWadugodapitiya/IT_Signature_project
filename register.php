@@ -1,47 +1,47 @@
 <?php
-require_once 'config.php';
+    require_once 'config.php';
 
-$error = '';
-$success = '';
+    $error = '';
+    $success = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
-    $mobile = trim($_POST['mobile']);
-    $password = trim($_POST['password']);
-    $confirm_password = trim($_POST['confirm_password']);
-    
-    // Validate input
-    if (empty($username) || empty($mobile) || empty($password) || empty($confirm_password)) {
-        $error = "All fields are required";
-    } elseif (!preg_match("/^[0-9]{10}$/", $mobile)) {
-        $error = "Please enter a valid 10-digit mobile number";
-    } elseif (strlen($password) < 6) {
-        $error = "Password must be at least 6 characters long";
-    } elseif ($password !== $confirm_password) {
-        $error = "Passwords do not match";
-    } else {
-        // Check if mobile already exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE mobile = ?");
-        $stmt->execute([$mobile]);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = trim($_POST['username']);
+        $mobile = trim($_POST['mobile']);
+        $password = trim($_POST['password']);
+        $confirm_password = trim($_POST['confirm_password']);
         
-        if ($stmt->rowCount() > 0) {
-            $error = "This mobile number is already registered";
+        // Validate input
+        if (empty($username) || empty($mobile) || empty($password) || empty($confirm_password)) {
+            $error = "All fields are required";
+        } elseif (!preg_match("/^[0-9]{10}$/", $mobile)) {
+            $error = "Please enter a valid 10-digit mobile number";
+        } elseif (strlen($password) < 6) {
+            $error = "Password must be at least 6 characters long";
+        } elseif ($password !== $confirm_password) {
+            $error = "Passwords do not match";
         } else {
-            // Insert new user
-            try {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("INSERT INTO users (name, mobile, password, type) VALUES (?, ?, ?, 'User')");
-                $stmt->execute([$username, $mobile, $hashed_password]);
-                $success = "Registration successful! Please login.";
+
+            $stmt = $conn->prepare("SELECT id FROM users WHERE mobile = ?");
+            $stmt->execute([$mobile]);
+            
+            if ($stmt->rowCount() > 0) {
+                $error = "This mobile number is already registered";
+            } else {
                 
-                // Redirect to login page after 2 seconds
-                header("refresh:2;url=index.html");
-            } catch(PDOException $e) {
-                $error = "Registration failed. Please try again.";
+                try {
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $conn->prepare("INSERT INTO users (name, mobile, password, type) VALUES (?, ?, ?, 'User')");
+                    $stmt->execute([$username, $mobile, $hashed_password]);
+                    $success = "Registration successful! Please login.";
+                    
+                    // Redirect to login page after 2 seconds
+                    header("refresh:2;url=index.php");
+                } catch(PDOException $e) {
+                    $error = "Registration failed. Please try again.";
+                }
             }
         }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,6 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body class="bg-light">
     <div class="container">
         <div class="row justify-content-center min-vh-100 align-items-center">
+
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="card shadow-lg border-0 rounded-lg">
                     <div class="card-body p-5">
@@ -106,12 +107,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <i class="fas fa-user-plus me-2"></i>Register
                             </button>
                             <div class="text-center">
-                                <p class="mb-0">Already have an account? <a href="index.html" class="text-primary text-decoration-none">Login</a></p>
+                                <p class="mb-0">Already have an account? <a href="index.php" class="text-primary text-decoration-none">Login</a></p>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 

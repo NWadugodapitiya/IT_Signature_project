@@ -44,8 +44,8 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
+
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container-fluid">
@@ -65,8 +65,8 @@
             </div>
         </nav>
 
-        <!-- Dashboard Content -->
         <div class="container-fluid py-4">
+            
             <!-- Product Management Section -->
             <div class="row mb-4">
                 <div class="col-12">
@@ -154,7 +154,6 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Custom JS -->
-    <script src="js/dashboard.js"></script>
     <script>
         $(document).ready(function() {
 
@@ -206,5 +205,8 @@
             });
         });
     </script>
+    <!-- Dashboard JS -->
+    <script src="js/dashboard.js"></script>
+
 </body>
 </html> 

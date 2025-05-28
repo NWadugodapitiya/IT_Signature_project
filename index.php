@@ -1,83 +1,83 @@
 <?php
-session_start();
-require_once 'config.php';
+    session_start();
+    require_once 'config.php';
 
-$error = '';
-$success = '';
+    $error = '';
+    $success = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['login'])) {
-        $mobile = trim($_POST['mobile']);
-        $password = trim($_POST['password']);
-        
-        if (empty($mobile) || empty($password)) {
-            $error = "All fields are required";
-        } else {
-            $stmt = $conn->prepare("SELECT id, name, password, type FROM users WHERE mobile = ?");
-            $stmt->execute([$mobile]);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['login'])) {
+            $mobile = trim($_POST['mobile']);
+            $password = trim($_POST['password']);
             
-            if ($stmt->rowCount() > 0) {
-                $user = $stmt->fetch();
-                if (password_verify($password, $user['password'])) {
-                    // Generate OTP
-                    $otp = rand(1000, 9999);
-                    $_SESSION['temp_user_id'] = $user['id'];
-                    $_SESSION['temp_user_type'] = $user['type'];
-                    $_SESSION['otp'] = $otp;
-                    $_SESSION['otp_time'] = time();
-                    
-                    // Send OTP via TextIt
-                    $site_textit_username = '9420233035';
-                    $site_textit_password = '1725';
-                    
-                    $text = urlencode("Your login OTP is: $otp. Valid for 5 minutes.");
-                    $baseurl = "https://www.textit.biz/sendmsg";
-                    $url = "$baseurl/?id=$site_textit_username&pw=$site_textit_password&to=$mobile&text=$text";
-                    $ret = file($url);
-                    
-                    $success = "OTP has been sent to your mobile number";
-                    
-                    // Show OTP input modal
-                    echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
-                            otpModal.show();
-                        });
-                    </script>";
+            if (empty($mobile) || empty($password)) {
+                $error = "All fields are required";
+            } else {
+                $stmt = $conn->prepare("SELECT id, name, password, type FROM users WHERE mobile = ?");
+                $stmt->execute([$mobile]);
+                
+                if ($stmt->rowCount() > 0) {
+                    $user = $stmt->fetch();
+                    if (password_verify($password, $user['password'])) {
+                        // Generate OTP
+                        $otp = rand(1000, 9999);
+                        $_SESSION['temp_user_id'] = $user['id'];
+                        $_SESSION['temp_user_type'] = $user['type'];
+                        $_SESSION['otp'] = $otp;
+                        $_SESSION['otp_time'] = time();
+                        
+                        // Send OTP via TextIt
+                        $site_textit_username = '9420233035';
+                        $site_textit_password = '1725';
+                        
+                        $text = urlencode("Your login OTP is: $otp. Valid for 5 minutes.");
+                        $baseurl = "https://www.textit.biz/sendmsg";
+                        $url = "$baseurl/?id=$site_textit_username&pw=$site_textit_password&to=$mobile&text=$text";
+                        $ret = file($url);
+                        
+                        $success = "OTP has been sent to your mobile number";
+                        
+                        // Show OTP input modal
+                        echo "<script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                                otpModal.show();
+                            });
+                        </script>";
+                    } else {
+                        $error = "Invalid mobile number or password";
+                    }
                 } else {
                     $error = "Invalid mobile number or password";
                 }
+            }
+        } elseif (isset($_POST['verify_otp'])) {
+            $entered_otp = trim($_POST['otp']);
+            
+            if ($entered_otp == $_SESSION['otp'] && (time() - $_SESSION['otp_time']) <= 300) { // 300 seconds = 5 minutes
+                // OTP is valid
+                $_SESSION['user_id'] = $_SESSION['temp_user_id'];
+                $_SESSION['user_type'] = $_SESSION['temp_user_type'];
+                
+                // Clear temporary session variables
+                unset($_SESSION['temp_user_id']);
+                unset($_SESSION['temp_user_type']);
+                unset($_SESSION['otp']);
+                unset($_SESSION['otp_time']);
+                
+                $success = "Login successful! Redirecting...";
+                
+                // Redirect based on user type with delay
+                echo "<script>
+                    setTimeout(function() {
+                        window.location.href = '" . ($_SESSION['user_type'] == 'Admin' ? 'admin.php' : 'user.php') . "';
+                    }, 2000);
+                </script>";
             } else {
-                $error = "Invalid mobile number or password";
+                $error = "Invalid OTP or OTP expired";
             }
         }
-    } elseif (isset($_POST['verify_otp'])) {
-        $entered_otp = trim($_POST['otp']);
-        
-        if ($entered_otp == $_SESSION['otp'] && (time() - $_SESSION['otp_time']) <= 300) { // 300 seconds = 5 minutes
-            // OTP is valid
-            $_SESSION['user_id'] = $_SESSION['temp_user_id'];
-            $_SESSION['user_type'] = $_SESSION['temp_user_type'];
-            
-            // Clear temporary session variables
-            unset($_SESSION['temp_user_id']);
-            unset($_SESSION['temp_user_type']);
-            unset($_SESSION['otp']);
-            unset($_SESSION['otp_time']);
-            
-            $success = "Login successful! Redirecting...";
-            
-            // Redirect based on user type with delay
-            echo "<script>
-                setTimeout(function() {
-                    window.location.href = '" . ($_SESSION['user_type'] == 'Admin' ? 'admin.php' : 'user.php') . "';
-                }, 2000);
-            </script>";
-        } else {
-            $error = "Invalid OTP or OTP expired";
-        }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="row justify-content-center min-vh-100 align-items-center">
             <div class="col-12 col-md-8 col-lg-5">
                 <div class="card shadow-lg border-0 rounded-lg">
+
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
                             <h1 class="fs-2 fw-bold text-primary">Welcome Back!</h1>
@@ -137,7 +138,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <p class="mb-0">Don't have an account? <a href="register.php" class="text-primary text-decoration-none">Register</a></p>
                             </div>
                         </form>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -192,9 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         const otpForm = document.getElementById('otpForm');
         const otpValue = document.getElementById('otpValue');
 
-        // Add input event listeners to OTP inputs
         otpInputs.forEach((input, index) => {
-            // Auto focus next input
             input.addEventListener('input', function() {
                 if (this.value.length === 1) {
                     if (index < otpInputs.length - 1) {
@@ -203,7 +204,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             });
 
-            // Handle backspace
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace' && !this.value) {
                     if (index > 0) {
@@ -212,7 +212,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             });
 
-            // Allow only numbers
             input.addEventListener('keypress', function(e) {
                 if (e.key < '0' || e.key > '9') {
                     e.preventDefault();
