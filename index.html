@@ -23,8 +23,12 @@
                         </div>
                         <form>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
-                                <label for="emailInput"><i class="fas fa-envelope me-2"></i>Email address</label>
+                                <input type="tel" class="form-control" id="mobile" name="mobile" 
+                                    placeholder="10 digit mobile number" 
+                                    pattern="[0-9]{10}" 
+                                    maxlength="10"
+                                    title="Please enter exactly 10 digits">
+                                <label for="mobile"><i class="fas fa-phone me-2"></i>Mobile Number</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="passwordInput" placeholder="Password">

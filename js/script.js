@@ -1,3 +1,5 @@
+// register.php in
+
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
     
@@ -129,3 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+// register.php out
+
+// index.html in
+
+
+
+
+
+// index.html out
