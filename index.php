@@ -35,6 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $url = "$baseurl/?id=$site_textit_username&pw=$site_textit_password&to=$mobile&text=$text";
                     $ret = file($url);
                     
+                    $success = "OTP has been sent to your mobile number";
+                    
                     // Show OTP input modal
                     echo "<script>
                         document.addEventListener('DOMContentLoaded', function() {
@@ -63,13 +65,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($_SESSION['otp']);
             unset($_SESSION['otp_time']);
             
-            // Redirect based on user type
-            if ($_SESSION['user_type'] == 'Admin') {
-                header("Location: admin.php");
-            } else {
-                header("Location: user.php");
-            }
-            exit();
+            $success = "Login successful! Redirecting...";
+            
+            // Redirect based on user type with delay
+            echo "<script>
+                setTimeout(function() {
+                    window.location.href = '" . ($_SESSION['user_type'] == 'Admin' ? 'admin.php' : 'user.php') . "';
+                }, 2000);
+            </script>";
         } else {
             $error = "Invalid OTP or OTP expired";
         }
@@ -102,14 +105,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <?php if($error): ?>
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <?php echo $error; ?>
+                            <i class="fas fa-exclamation-circle me-2"></i><?php echo $error; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                         <?php endif; ?>
 
                         <?php if($success): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?php echo $success; ?>
+                            <i class="fas fa-check-circle me-2"></i><?php echo $success; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                         <?php endif; ?>
