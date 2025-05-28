@@ -56,38 +56,65 @@ A full-featured e-commerce system with real-time inventory management, secure us
 
 ## Database Structure
 
-### Users Table
 ```sql
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+-- Create the database
+CREATE DATABASE IF NOT EXISTS it_signature;
+USE it_signature;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
     mobile VARCHAR(15) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    type ENUM('admin', 'user') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    type ENUM('Admin', 'User') DEFAULT 'User',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-```
 
-### Products Table
-```sql
-CREATE TABLE products (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+-- Create products table
+CREATE TABLE IF NOT EXISTS products (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    quantity INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    quantity INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-```
 
-### Cart Table
-```sql
-CREATE TABLE card (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+-- Create shopping cart table
+CREATE TABLE IF NOT EXISTS card (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     product_id INT NOT NULL,
-    qty INT NOT NULL DEFAULT 1,
-    datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    qty INT NOT NULL,
+    datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Create orders table
+CREATE TABLE IF NOT EXISTS orders (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    status ENUM('pending', 'processing', 'completed', 'cancelled') DEFAULT 'pending',
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    special_instructions TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Create order items table
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 ```
@@ -101,12 +128,12 @@ CREATE TABLE card (
    ```
 
 2. **Database Configuration**
-   - Create a MySQL database
-   - Import the SQL schema files
+   - Create a MySQL database named 'it_signature'
+   - Import the SQL schema provided above
    - Configure database connection in `config.php`:
      ```php
      define('DB_HOST', 'localhost');
-     define('DB_NAME', 'your_database');
+     define('DB_NAME', 'it_signature');
      define('DB_USER', 'your_username');
      define('DB_PASS', 'your_password');
      ```
@@ -149,13 +176,6 @@ CREATE TABLE card (
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## Acknowledgments
-
-- Bootstrap team for the amazing framework
-- TextIt for SMS integration
-- Font Awesome for icons
-- SweetAlert2 for beautiful alerts
 
 ## Support
 
