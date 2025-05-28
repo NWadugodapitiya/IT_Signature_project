@@ -277,6 +277,7 @@
 
 .quantity-btn {
     width: 30px;
+    height: 30px;
     padding: 0;
     display: flex;
     align-items: center;
