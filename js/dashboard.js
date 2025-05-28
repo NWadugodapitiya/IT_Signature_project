@@ -207,10 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cart Management
     let cart = [];
     const cartCountElements = document.querySelectorAll('.cart-count');
-    const cartItemsContainer = document.querySelector('.cart-items');
     const cartItemsTable = document.querySelector('.cart-items-table');
     const cartTotalElements = document.querySelectorAll('.cart-total');
-    const cartButton = document.getElementById('cartButton');
     const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
 
     // Add to Cart functionality
@@ -229,14 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Product added to cart!');
         });
     });
-
-    // Cart Modal
-    if (cartButton) {
-        cartButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            cartModal.show();
-        });
-    }
 
     // Update quantity in cart
     document.addEventListener('click', function(e) {
@@ -290,27 +280,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cartCountElements.forEach(element => {
             element.textContent = totalItems;
         });
-
-        // Update cart dropdown
-        if (cartItemsContainer) {
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<div class="text-center text-muted">Your cart is empty</div>';
-            } else {
-                cartItemsContainer.innerHTML = cart.map(item => `
-                    <div class="cart-item mb-2">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="mb-0">${item.name}</h6>
-                                <small class="text-muted">Qty: ${item.quantity}</small>
-                            </div>
-                            <div class="text-end">
-                                <div>Rs. ${(item.price * item.quantity).toFixed(2)}</div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
 
         // Update cart modal table
         if (cartItemsTable) {
@@ -368,24 +337,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load cart on page load
     loadCart();
-
-    // Search functionality
-    const searchInput = document.querySelector('input[placeholder="Search products..."]');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const productCards = document.querySelectorAll('.product-card');
-            
-            productCards.forEach(card => {
-                const productName = card.querySelector('.card-title').textContent.toLowerCase();
-                if (productName.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    }
 
     // Cart Modal Functionality
     const cartTriggers = document.querySelectorAll('.cart-trigger');
