@@ -23,12 +23,19 @@
                         </div>
                         <form>
                             <div class="form-floating mb-3">
-                                <input type="tel" class="form-control" id="phoneInput" placeholder="Phone number" pattern="[0-9]{10,}" title="Please enter a valid phone number">
-                                <label for="phoneInput"><i class="fas fa-phone me-2"></i>Phone Number</label>
+                                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+                                <label for="emailInput"><i class="fas fa-envelope me-2"></i>Email address</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="passwordInput" placeholder="Password">
                                 <label for="passwordInput"><i class="fas fa-lock me-2"></i>Password</label>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                                </div>
+                                <a href="#" class="text-primary text-decoration-none">Forgot password?</a>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mb-3">
                                 <i class="fas fa-sign-in-alt me-2"></i>Login
@@ -48,4 +55,4 @@
     <!-- Custom JS -->
     <script src="js/script.js"></script>
 </body>
-</html> 
+</html>

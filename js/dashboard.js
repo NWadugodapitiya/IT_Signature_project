@@ -386,4 +386,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Cart Modal Functionality
+    const cartTriggers = document.querySelectorAll('.cart-trigger');
+    
+    cartTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            cartModal.show();
+        });
+    });
 }); 
