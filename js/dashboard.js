@@ -203,4 +203,187 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Cart Management
+    let cart = [];
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    const cartItemsContainer = document.querySelector('.cart-items');
+    const cartItemsTable = document.querySelector('.cart-items-table');
+    const cartTotalElements = document.querySelectorAll('.cart-total');
+    const cartButton = document.getElementById('cartButton');
+    const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+
+    // Add to Cart functionality
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const productCard = this.closest('.product-card');
+            const product = {
+                id: productCard.dataset.productId,
+                name: productCard.querySelector('.card-title').textContent,
+                price: parseFloat(productCard.querySelector('.card-text.text-primary').textContent.replace('Rs. ', '')),
+                quantity: 1
+            };
+
+            addToCart(product);
+            updateCartUI();
+            showNotification('Product added to cart!');
+        });
+    });
+
+    // Cart Modal
+    if (cartButton) {
+        cartButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            cartModal.show();
+        });
+    }
+
+    // Update quantity in cart
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('quantity-btn')) {
+            const row = e.target.closest('tr');
+            const productId = row.dataset.productId;
+            const change = e.target.classList.contains('plus') ? 1 : -1;
+            updateQuantity(productId, change);
+        }
+    });
+
+    // Remove from cart
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-from-cart')) {
+            const row = e.target.closest('tr');
+            const productId = row.dataset.productId;
+            removeFromCart(productId);
+        }
+    });
+
+    // Cart Functions
+    function addToCart(product) {
+        const existingItem = cart.find(item => item.id === product.id);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push(product);
+        }
+        saveCart();
+    }
+
+    function updateQuantity(productId, change) {
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            item.quantity = Math.max(1, item.quantity + change);
+            saveCart();
+            updateCartUI();
+        }
+    }
+
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+        saveCart();
+        updateCartUI();
+        showNotification('Product removed from cart!');
+    }
+
+    function updateCartUI() {
+        // Update cart count
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCountElements.forEach(element => {
+            element.textContent = totalItems;
+        });
+
+        // Update cart dropdown
+        if (cartItemsContainer) {
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="text-center text-muted">Your cart is empty</div>';
+            } else {
+                cartItemsContainer.innerHTML = cart.map(item => `
+                    <div class="cart-item mb-2">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0">${item.name}</h6>
+                                <small class="text-muted">Qty: ${item.quantity}</small>
+                            </div>
+                            <div class="text-end">
+                                <div>Rs. ${(item.price * item.quantity).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Update cart modal table
+        if (cartItemsTable) {
+            cartItemsTable.innerHTML = cart.map(item => `
+                <tr data-product-id="${item.id}">
+                    <td>${item.name}</td>
+                    <td>Rs. ${item.price.toFixed(2)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary quantity-btn minus">-</button>
+                            <span class="btn btn-outline-secondary disabled">${item.quantity}</span>
+                            <button class="btn btn-outline-secondary quantity-btn plus">+</button>
+                        </div>
+                    </td>
+                    <td>Rs. ${(item.price * item.quantity).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger remove-from-cart">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update total
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotalElements.forEach(element => {
+            element.textContent = `Rs. ${total.toFixed(2)}`;
+        });
+    }
+
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function loadCart() {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+            updateCartUI();
+        }
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success position-fixed top-0 end-0 m-3';
+        notification.style.zIndex = '1050';
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
+    }
+
+    // Load cart on page load
+    loadCart();
+
+    // Search functionality
+    const searchInput = document.querySelector('input[placeholder="Search products..."]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('.card-title').textContent.toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
 }); 

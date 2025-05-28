@@ -16,7 +16,6 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <img src="https://via.placeholder.com/50" alt="User Avatar" class="rounded-circle">
             <h4>John Doe</h4>
             <p class="text-muted">User Account</p>
         </div>
@@ -27,14 +26,8 @@
             <li>
                 <a href="#" id="cartButton">
                     <i class="fas fa-shopping-cart"></i> Cart
-                    <span class="badge bg-primary cart-count">0</span>
+                    <span class="badge bg-primary cart-count" style="margin-left: 10px;">0</span>
                 </a>
-            </li>
-            <li>
-                <a href="#"><i class="fas fa-history"></i> Order History</a>
-            </li>
-            <li>
-                <a href="#"><i class="fas fa-user"></i> Profile</a>
             </li>
             <li class="sidebar-bottom">
                 <a href="../index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -52,25 +45,10 @@
                 </button>
                 <div class="d-flex align-items-center">
                     <div class="dropdown me-3">
-                        <a href="#" class="dropdown-toggle text-dark text-decoration-none" data-bs-toggle="dropdown">
+                        <button class="btn btn-primary add-to-cart" id="cartButton">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="badge bg-primary cart-count">0</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end cart-dropdown" style="width: 300px;">
-                            <div class="p-3">
-                                <h6 class="mb-3">Shopping Cart</h6>
-                                <div class="cart-items">
-                                    <!-- Cart items will be dynamically added here -->
-                                    <div class="text-center text-muted">Your cart is empty</div>
-                                </div>
-                                <hr>
-                                <div class="d-flex justify-content-between mb-3">
-                                    <strong>Total:</strong>
-                                    <strong class="cart-total">Rs. 0.00</strong>
-                                </div>
-                                <button class="btn btn-primary w-100">Checkout</button>
-                            </div>
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,21 +62,15 @@
                     <div class="card">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Available Products</h5>
-                            <div class="input-group" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Search products...">
-                                <button class="btn btn-outline-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
                         </div>
                         <div class="card-body">
                             <div class="row g-4">
                                 <!-- Product Cards -->
                                 <div class="col-md-4 col-lg-3">
-                                    <div class="card product-card h-100">
+                                    <div class="card product-card h-100" data-product-id="1">
                                         <div class="card-body">
-                                            <h5 class="card-title">Product 1</h5>
-                                            <p class="card-text text-primary fw-bold">Rs. 299.99</p>
+                                            <h5 class="card-title">Smartphone X</h5>
+                                            <p class="card-text text-primary fw-bold">Rs. 29999.99</p>
                                             <p class="card-text text-success">In Stock: 50</p>
                                             <button class="btn btn-primary w-100 add-to-cart">
                                                 <i class="fas fa-cart-plus me-2"></i>Add to Cart
@@ -107,10 +79,10 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-lg-3">
-                                    <div class="card product-card h-100">
+                                    <div class="card product-card h-100" data-product-id="2">
                                         <div class="card-body">
-                                            <h5 class="card-title">Product 2</h5>
-                                            <p class="card-text text-primary fw-bold">Rs. 199.99</p>
+                                            <h5 class="card-title">Laptop Pro</h5>
+                                            <p class="card-text text-primary fw-bold">Rs. 59999.99</p>
                                             <p class="card-text text-success">In Stock: 30</p>
                                             <button class="btn btn-primary w-100 add-to-cart">
                                                 <i class="fas fa-cart-plus me-2"></i>Add to Cart
@@ -118,7 +90,30 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- More product cards can be added dynamically -->
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="card product-card h-100" data-product-id="3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Smart Watch</h5>
+                                            <p class="card-text text-primary fw-bold">Rs. 4999.99</p>
+                                            <p class="card-text text-success">In Stock: 100</p>
+                                            <button class="btn btn-primary w-100 add-to-cart">
+                                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="card product-card h-100" data-product-id="4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Wireless Earbuds</h5>
+                                            <p class="card-text text-primary fw-bold">Rs. 2999.99</p>
+                                            <p class="card-text text-success">In Stock: 75</p>
+                                            <button class="btn btn-primary w-100 add-to-cart">
+                                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
